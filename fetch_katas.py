@@ -60,11 +60,17 @@ for page in range(1, 3):
             filename = title.replace(" ", "_").lower() + ".py"
             file_path = os.path.join(folder, filename)
 
-            # Save the solution code
+            # Check if file already exists (skip duplicates)
+            if os.path.exists(file_path):
+                print(f"Skipping existing kata: {filename}")
+                continue  # Skip to next kata
+
+            # Save the new solution code
             with open(file_path, "w", encoding='utf-8') as f:
                 f.write(f"# {title}\n# Link: {kata_link}\n\n{solution_code}")
+                print(f"Saved new kata: {filename}")
 
-print("All solutions saved successfully!")
+print("All new solutions saved successfully!")
 
 # Git commands to add, commit, and push changes
 def git_push():
