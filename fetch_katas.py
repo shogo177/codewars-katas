@@ -1,6 +1,7 @@
 import os
 import requests
 from bs4 import BeautifulSoup
+import subprocess
 
 # Your Codewars username
 USERNAME = "Neonsage177"
@@ -9,7 +10,7 @@ USERNAME = "Neonsage177"
 SESSION_ID = "627f25f897f0a969fcfd3790b02d85ef"
 
 # Base URLs
-COMPLETED_SOLUTIONS_URL = f"https://www.codewars.com/users/Neonsage177/completed_solutions"
+COMPLETED_SOLUTIONS_URL = f"https://www.codewars.com/users/{USERNAME}/completed_solutions"
 
 # Headers with session cookie to stay logged in
 HEADERS = {
@@ -21,7 +22,7 @@ base_dir = os.getcwd()
 
 # Loop through multiple pages if needed (adjust range for more pages)
 for page in range(1, 3):
-    url = COMPLETED_SOLUTIONS_URL + str(page)
+    url = COMPLETED_SOLUTIONS_URL + "?page=" + str(page)
     response = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -47,9 +48,9 @@ for page in range(1, 3):
             # Find the rank on the kata page
             rank_tag = solution_soup.find('span', class_='is-extra-wide')
             if rank_tag:
-                 rank = rank_tag.text.strip().replace(" ", "").lower()  # e.g., "6kyu"
+                rank = rank_tag.text.strip().replace(" ", "").lower()  # e.g., "6kyu"
             else:
-                 rank = "unknown_rank"
+                rank = "unknown_rank"
 
             # Folder structure
             folder = os.path.join(base_dir, rank)
@@ -64,3 +65,22 @@ for page in range(1, 3):
                 f.write(f"# {title}\n# Link: {kata_link}\n\n{solution_code}")
 
 print("All solutions saved successfully!")
+
+# Git commands to add, commit, and push changes
+def git_push():
+    print("Adding files to Git...")
+    subprocess.run(["git", "add", "."], check=True)
+    
+    print("Committing changes...")
+    commit_message = "Auto-sync Codewars Solutions"
+    subprocess.run(["git", "commit", "-m", commit_message], check=True)
+    
+    print("Pushing to GitHub...")
+    subprocess.run(["git", "push"], check=True)
+
+# Execute the git push function
+try:
+    git_push()
+    print("GitHub sync complete! 🚀")
+except subprocess.CalledProcessError as e:
+    print("Git operation failed:", e)
